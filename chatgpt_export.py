@@ -32,6 +32,61 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+def _auto_install(packages: list[str]):
+    """Install packages via pip. Returns True on success."""
+    try:
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", *packages],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def _ensure_dependencies():
+    """Auto-install missing dependencies on first run."""
+    missing = []
+
+    try:
+        import rich  # noqa: F401
+    except ImportError:
+        missing.append("rich")
+
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        missing.append("playwright")
+
+    if not missing:
+        return
+
+    print(f"First run -- installing dependencies: {', '.join(missing)}...")
+    if not _auto_install(missing):
+        print(f"\nFailed to auto-install. Run manually:")
+        print(f"  pip install {' '.join(missing)}")
+        if "playwright" in missing:
+            print("  python -m playwright install chromium")
+        sys.exit(1)
+
+    if "playwright" in missing:
+        print("Setting up Playwright browsers...")
+        try:
+            subprocess.check_call(
+                [sys.executable, "-m", "playwright", "install", "chromium"],
+                stdout=subprocess.DEVNULL,
+            )
+        except subprocess.CalledProcessError:
+            print("\nFailed to install browsers. Run manually:")
+            print("  python -m playwright install chromium")
+            sys.exit(1)
+
+    print("Ready.\n")
+
+
+_ensure_dependencies()
+
 try:
     from rich.console import Console
     from rich.progress import (
@@ -47,12 +102,7 @@ try:
 except ImportError:
     HAS_RICH = False
 
-try:
-    from playwright.sync_api import sync_playwright
-except ImportError:
-    print("Error: playwright is required. Install it with:")
-    print("  pip install playwright && python -m playwright install chromium")
-    sys.exit(1)
+from playwright.sync_api import sync_playwright
 
 
 # ---------------------------------------------------------------------------
