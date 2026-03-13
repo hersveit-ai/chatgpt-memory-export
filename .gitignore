@@ -1,0 +1,29 @@
+# Output directories
+raw_conversations/
+memory_export/
+
+# Chrome profile (contains session cookies)
+.chrome_profile/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
