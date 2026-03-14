@@ -1,0 +1,33 @@
+name: Broken Selectors
+description: ChatGPT updated their frontend and extraction stopped working
+labels: ["selectors", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ChatGPT changes their DOM frequently. If messages or sidebar links aren't being found, the CSS selectors probably need updating.
+
+  - type: dropdown
+    id: what-broke
+    attributes:
+      label: What stopped working?
+      options:
+        - Message extraction (conversations download but have 0 messages)
+        - Sidebar scanning (scan finds 0 conversations)
+        - Both
+    validations:
+      required: true
+
+  - type: textarea
+    id: new-selectors
+    attributes:
+      label: Updated selectors (if you found them)
+      description: |
+        Open ChatGPT in Chrome DevTools (F12), inspect a message or sidebar link, and find the new selector.
+      render: python
+
+  - type: input
+    id: date
+    attributes:
+      label: When did it last work?
+      placeholder: "e.g. 2026-03-15"
